@@ -1,0 +1,18 @@
+sdk-version: 1.2.0
+name: create-daml-app
+version: 0.1.0
+source: daml
+parties:
+- Alice
+- Honda
+- Maruti
+- Toyota
+dependencies:
+- daml-prim
+- daml-stdlib
+- daml-trigger
+- daml-script
+sandbox-options:
+- --wall-clock-time
+- --ledgerid=create-daml-app-sandbox
+start-navigator: true

@@ -1,0 +1,68 @@
+module Main where
+
+
+-- MAIN_TEMPLATE_BEGIN
+template CarRequest with
+    userName: Party
+    userBudget : Int
+    interestedCompany : [Party]
+  where
+    signatory userName
+    observer interestedCompany
+-- MAIN_TEMPLATE_END
+
+    
+    -- FOLLOW_BEGIN
+    nonconsuming choice Proposal: ContractId CarProposal with
+        company : Party
+        model : Text
+        price  : Int
+      controller company
+      do
+         assert(company `elem` interestedCompany)
+         create CarProposal with companyName = company ,queryParty=userName, carModel = model, carPrice = price
+
+    choice NotInterested :  () with
+
+        company : Party
+        
+      controller company
+        do
+          assert(company `elem` interestedCompany)
+          return ()
+
+
+template CarProposal with
+   companyName : Party
+   queryParty : Party
+   carModel : Text
+   carPrice : Int
+   
+  where
+    signatory companyName
+    observer queryParty    
+
+
+    controller queryParty can
+      AcceptOffer : ContractId FinalAgreement
+       do
+         create FinalAgreement with 
+           company = companyName
+           user = queryParty
+           model = carModel
+    
+    controller queryParty can
+      RejectOffer : ()
+       do
+         return ()
+    
+
+template  FinalAgreement with
+   company :Party
+   user : Party
+   model : Text
+  
+  where
+    signatory user
+    observer company
+    
